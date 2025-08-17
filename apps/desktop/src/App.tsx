@@ -1,6 +1,7 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getProject, getShots, getProxyUrl, getProxyStatus } from './lib/api';
+import { runStage, openJobWS } from './lib/jobs';
 
 type ShotItem = { id: string; video_path?: string };
 
@@ -60,13 +61,55 @@ export default function App() {
           </div>
         </section>
         <aside style={{borderLeft:'1px solid #222',padding:8}}>
-          <h4>Inspector</h4>
-          <p>Shot metadata & stage params (coming next)</p>
+          <Inspector
+            activeShot={activeShot}
+            onCompleted={async ()=>{
+              setCacheBust(Date.now());
+              try { const list = await getShots(); setShots(list); } catch {}
+            }}
+          />
         </aside>
       </main>
       <footer style={{padding:8,borderTop:'1px solid #222'}}>
         <small>v0.1</small>
       </footer>
+    </div>
+  );
+}
+
+function Inspector({activeShot, onCompleted}:{activeShot?:string; onCompleted?:()=>void}){
+  const [pct, setPct] = useState(0);
+  const wsRef = useRef<WebSocket|null>(null);
+  async function onRun(){
+    if(!activeShot) return;
+    const jobId = await runStage('dummy', activeShot);
+    wsRef.current?.close();
+    wsRef.current = openJobWS(jobId, (e)=> {
+      setPct(e.pct);
+      if(e.pct>=100) onCompleted?.();
+    });
+  }
+  async function runVACE(){
+    if(!activeShot) return;
+    const r = await fetch(`http://localhost:5175/run/vace/${activeShot}`, {method:'POST'});
+    const {job_id} = await r.json();
+    wsRef.current?.close();
+    wsRef.current = openJobWS(job_id, (e)=> {
+      setPct(e.pct);
+      if(e.pct>=100) onCompleted?.();
+    });
+  }
+  return (
+    <div>
+      <h4>Inspector</h4>
+      <button disabled={!activeShot} onClick={onRun}>Run Dummy Stage</button>
+      <button disabled={!activeShot} onClick={runVACE} style={{marginLeft:8}}>Run VACE</button>
+      <div style={{marginTop:8}}>
+        <div style={{height:8, background:'#333'}}>
+          <div style={{height:8, width:`${pct}%`, background:'#0af'}}/>
+        </div>
+        <small>{pct}%</small>
+      </div>
     </div>
   );
 }
