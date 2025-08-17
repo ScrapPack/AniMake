@@ -1,0 +1,25 @@
+{
+  "project": {
+    "name": "Composer Demo",
+    "fps": 24,
+    "color": "Rec709",
+    "aspect_mode": "16:9",
+    "resolutions": {
+      "landscape": "1920x1080",
+      "portrait": "1080x1920"
+    },
+    "outputs": [
+      "landscape"
+    ]
+  },
+  "shots": [
+    {
+      "id": "s1",
+      "in": "00:00:01",
+      "out": "00:00:12",
+      "stages": {},
+      "active_video": "",
+      "video_path": "project_samples/tiny_scene/sample.mp4"
+    }
+  ]
+}
