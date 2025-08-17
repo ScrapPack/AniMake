@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.tauri.app/config/1",
+  "package": {
+    "productName": "Animation Composer",
+    "version": "0.1.0"
+  },
+  "build": {
+    "beforeBuildCommand": "pnpm vite build",
+    "beforeDevCommand": "pnpm vite",
+    "devPath": "http://localhost:5173",
+    "distDir": "../dist"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.anime.composer"
+    },
+    "windows": [
+      {
+        "title": "Animation Composer",
+        "width": 1200,
+        "height": 800
+      }
+    ]
+  }
+}
+
+

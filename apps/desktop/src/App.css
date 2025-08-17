@@ -1,0 +1,6 @@
+html, body, #root { height: 100%; margin: 0; background: #111; color: #eee; font-family: system-ui, sans-serif; }
+select, input { background: #222; color: #eee; border: 1px solid #333; }
+h4 { margin: 0 0 8px; }
+ul { margin: 0; padding-left: 18px; }
+
+
